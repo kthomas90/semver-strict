@@ -1,0 +1,19 @@
+{
+  "name": "semver-strict",
+  "version": "0.1.0",
+  "description": "A strict, dependency-free semantic version parser with precise error locations.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "author": "kthomas90",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}
