@@ -116,11 +116,38 @@ Expected a numeric patch version (line 4, column 11)
             ^
 ```
 
+### Parsing a range
+
+`parseRange` reads the range syntax used for dependency constraints:
+comparators (`>=1.2.3`, `<2.0.0`), the `^` and `~` shorthands, whitespace
+to AND comparators together, and `||` to OR whole comparator sets.
+
+```ts
+import { parseRange } from "semver-strict"
+
+parseRange("^1.2.3")
+// { sets: [ { comparators: [
+//   { operator: ">=", version: 1.2.3 },
+//   { operator: "<", version: 2.0.0 },
+// ] } ] }
+
+parseRange("~1.2.3 || >=2.0.0 <3.0.0")
+```
+
+`^` and `~` are expanded eagerly into their equivalent bounds, so callers
+never need to special-case them: `^1.2.3` becomes `>=1.2.3 <2.0.0`, `^0.2.3`
+becomes `>=0.2.3 <0.3.0`, and `~1.2.3` becomes `>=1.2.3 <1.3.0`. Errors use
+the same line/column reporting as `parseVersion`.
+
+There's no `satisfies()` yet to test a version against a parsed range —
+that's next.
+
 ## API
 
 - `parseVersion(input: string): SemVer` — parse one version string, throw `SemverParseError` on failure.
 - `tryParseVersion(input: string): ParseResult` — same, without throwing.
 - `parseManifest(text: string): ManifestEntry[]` — parse a `name@version` per line document.
+- `parseRange(input: string): Range` — parse a comparator range, expanding `^` and `~`.
 - `compare(a: SemVer, b: SemVer): -1 | 0 | 1` — SemVer 2.0.0 precedence.
 - `format(version: SemVer): string` — serialize back to a version string.
 - `SemverParseError` — carries `.line`, `.column`, and `.lineText` in addition to `.message`.

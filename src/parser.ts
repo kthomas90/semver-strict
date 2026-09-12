@@ -38,7 +38,7 @@ function isAllDigits(text: string): boolean {
 }
 
 /** A cursor over a single, single-line string. Positions are 0-based. */
-class Scanner {
+export class Scanner {
   pos = 0
 
   constructor(readonly input: string) {}
@@ -127,7 +127,13 @@ function readBuild(s: Scanner): string[] {
   return identifiers
 }
 
-function readVersion(s: Scanner): SemVer {
+/**
+ * Reads a version starting at the scanner's current position, without
+ * requiring the scanner to be exhausted afterward. Used both by
+ * parseVersion (which does enforce end-of-input) and by the range parser,
+ * which needs to keep reading past a version into the rest of the range.
+ */
+export function readVersionBody(s: Scanner): SemVer {
   const major = readNumericField(s, "major")
   s.expect(".", 'Expected "." after the major version')
   const minor = readNumericField(s, "minor")
@@ -146,11 +152,15 @@ function readVersion(s: Scanner): SemVer {
     build = readBuild(s)
   }
 
+  return { major, minor, patch, prerelease, build }
+}
+
+function readVersion(s: Scanner): SemVer {
+  const version = readVersionBody(s)
   if (!s.atEnd()) {
     s.fail(`Unexpected character "${s.peek()}"`)
   }
-
-  return { major, minor, patch, prerelease, build }
+  return version
 }
 
 /**
