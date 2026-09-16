@@ -1,5 +1,5 @@
 import { ScanError, SemverParseError } from "./errors.js"
-import { Scanner, readVersionBody } from "./parser.js"
+import { Scanner, readVersionBody, compare } from "./parser.js"
 import type { SemVer } from "./parser.js"
 
 export type ComparatorOperator = "=" | ">" | ">=" | "<" | "<="
@@ -134,4 +134,28 @@ export function parseRange(input: string): Range {
     }
     throw err
   }
+}
+
+function matchesComparator(version: SemVer, comparator: Comparator): boolean {
+  const result = compare(version, comparator.version)
+  switch (comparator.operator) {
+    case "=":
+      return result === 0
+    case ">":
+      return result > 0
+    case ">=":
+      return result >= 0
+    case "<":
+      return result < 0
+    case "<=":
+      return result <= 0
+  }
+}
+
+/**
+ * Tests a version against a parsed range. A version satisfies the range if
+ * it satisfies every comparator in at least one of the range's sets.
+ */
+export function satisfies(version: SemVer, range: Range): boolean {
+  return range.sets.some((set) => set.comparators.every((c) => matchesComparator(version, c)))
 }

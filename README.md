@@ -139,8 +139,19 @@ never need to special-case them: `^1.2.3` becomes `>=1.2.3 <2.0.0`, `^0.2.3`
 becomes `>=0.2.3 <0.3.0`, and `~1.2.3` becomes `>=1.2.3 <1.3.0`. Errors use
 the same line/column reporting as `parseVersion`.
 
-There's no `satisfies()` yet to test a version against a parsed range —
-that's next.
+Use `satisfies` to test a version against a parsed range:
+
+```ts
+import { parseRange, parseVersion, satisfies } from "semver-strict"
+
+const range = parseRange("^1.2.3")
+
+satisfies(parseVersion("1.4.0"), range) // true
+satisfies(parseVersion("2.0.0"), range) // false
+```
+
+A version satisfies the range if it satisfies every comparator in at least
+one of the range's comparator sets.
 
 ## API
 
@@ -148,6 +159,7 @@ that's next.
 - `tryParseVersion(input: string): ParseResult` — same, without throwing.
 - `parseManifest(text: string): ManifestEntry[]` — parse a `name@version` per line document.
 - `parseRange(input: string): Range` — parse a comparator range, expanding `^` and `~`.
+- `satisfies(version: SemVer, range: Range): boolean` — test a version against a parsed range.
 - `compare(a: SemVer, b: SemVer): -1 | 0 | 1` — SemVer 2.0.0 precedence.
 - `format(version: SemVer): string` — serialize back to a version string.
 - `SemverParseError` — carries `.line`, `.column`, and `.lineText` in addition to `.message`.
