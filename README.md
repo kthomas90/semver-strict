@@ -153,6 +153,24 @@ satisfies(parseVersion("2.0.0"), range) // false
 A version satisfies the range if it satisfies every comparator in at least
 one of the range's comparator sets.
 
+### Sorting and resolving
+
+```ts
+import { parseRange, parseVersion, sortVersions, maxSatisfying } from "semver-strict"
+
+const versions = ["1.4.0", "1.2.3", "2.0.0", "1.9.0"].map(parseVersion)
+
+sortVersions(versions).map(format)
+// ["1.2.3", "1.4.0", "1.9.0", "2.0.0"]
+
+maxSatisfying(versions, parseRange("^1.0.0"))
+// 1.9.0
+```
+
+`maxSatisfying` is what a package manager needs to resolve a dependency
+constraint against a list of published versions: the highest one that
+satisfies the range, or `undefined` if none do.
+
 ## API
 
 - `parseVersion(input: string): SemVer` — parse one version string, throw `SemverParseError` on failure.
@@ -160,7 +178,9 @@ one of the range's comparator sets.
 - `parseManifest(text: string): ManifestEntry[]` — parse a `name@version` per line document.
 - `parseRange(input: string): Range` — parse a comparator range, expanding `^` and `~`.
 - `satisfies(version: SemVer, range: Range): boolean` — test a version against a parsed range.
+- `maxSatisfying(versions: SemVer[], range: Range): SemVer | undefined` — highest version in the list that satisfies the range.
 - `compare(a: SemVer, b: SemVer): -1 | 0 | 1` — SemVer 2.0.0 precedence.
+- `sortVersions(versions: SemVer[]): SemVer[]` — sort versions in ascending precedence order.
 - `format(version: SemVer): string` — serialize back to a version string.
 - `SemverParseError` — carries `.line`, `.column`, and `.lineText` in addition to `.message`.
 

@@ -159,3 +159,17 @@ function matchesComparator(version: SemVer, comparator: Comparator): boolean {
 export function satisfies(version: SemVer, range: Range): boolean {
   return range.sets.some((set) => set.comparators.every((c) => matchesComparator(version, c)))
 }
+
+/**
+ * Returns the highest-precedence version in the list that satisfies the
+ * range, or undefined if none do. Useful for resolving a dependency
+ * constraint against a list of published versions.
+ */
+export function maxSatisfying(versions: SemVer[], range: Range): SemVer | undefined {
+  let best: SemVer | undefined
+  for (const version of versions) {
+    if (!satisfies(version, range)) continue
+    if (best === undefined || compare(version, best) > 0) best = version
+  }
+  return best
+}

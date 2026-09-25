@@ -244,6 +244,11 @@ export function compare(a: SemVer, b: SemVer): -1 | 0 | 1 {
   return comparePrerelease(a.prerelease, b.prerelease)
 }
 
+/** Sorts versions in ascending precedence order. Does not mutate the input array. */
+export function sortVersions(versions: SemVer[]): SemVer[] {
+  return [...versions].sort(compare)
+}
+
 /**
  * Parses a small manifest format: one "name@version" pin per line, blank
  * lines and lines starting with "#" ignored. Errors point at the exact

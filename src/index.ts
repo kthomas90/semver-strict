@@ -1,5 +1,5 @@
 export type { SemVer, ParseResult, ManifestEntry } from "./parser.js"
-export { parseVersion, tryParseVersion, parseManifest, compare, format } from "./parser.js"
+export { parseVersion, tryParseVersion, parseManifest, compare, format, sortVersions } from "./parser.js"
 export type { Range, ComparatorSet, Comparator, ComparatorOperator } from "./range.js"
-export { parseRange, satisfies } from "./range.js"
+export { parseRange, satisfies, maxSatisfying } from "./range.js"
 export { SemverParseError } from "./errors.js"
