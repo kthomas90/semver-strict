@@ -257,7 +257,9 @@ export function sortVersions(versions: SemVer[]): SemVer[] {
  */
 export function parseManifest(text: string): ManifestEntry[] {
   const entries: ManifestEntry[] = []
-  const lines = text.split("\n")
+  // Manifests checked out on Windows have CRLF endings; a stray "\r" would
+  // otherwise be reported as an unexpected character after every version.
+  const lines = text.split(/\r?\n/)
 
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i]

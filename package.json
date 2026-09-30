@@ -8,10 +8,12 @@
   "license": "MIT",
   "author": "kthomas90",
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*"
   ],
   "scripts": {
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "test": "tsc -p . && node --test dist/"
   },
   "devDependencies": {
     "typescript": "^5.5.0"
